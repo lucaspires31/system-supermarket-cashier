@@ -1,0 +1,134 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.pdv {
+  background: linear-gradient(90deg, #123b5e, #1e5b89);
+  min-height: 100vh;
+  padding: 15px;
+  color: white;
+}
+
+.topo {
+  background: #0d2f47;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.conteudo {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* ESQUERDA */
+.painel-esquerdo {
+  width: 250px;
+  background: #eaeaea;
+  padding: 15px;
+  color: black;
+}
+
+.imagem-produto {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.imagem-produto img {
+  max-width: 120px;
+}
+
+.campo {
+  margin-bottom: 10px;
+}
+
+.campo label {
+  font-size: 12px;
+  display: block;
+}
+
+.campo input {
+  width: 100%;
+  padding: 6px;
+}
+
+.destaque input {
+  font-weight: bold;
+  background: #dff0ff;
+}
+
+/* LISTA */
+.lista-produtos {
+  flex: 1;
+  background: white;
+  color: black;
+  padding: 10px;
+}
+
+.titulo-lista {
+  background: #0d2f47;
+  color: white;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #1e5b89;
+  color: white;
+  font-size: 12px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* RESUMO */
+.resumo {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.bloco {
+  background: #0d2f47;
+  padding: 10px;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.subtotal {
+  font-weight: bold;
+}
+
+.forma-pagamento {
+  background: white;
+  color: black;
+  padding: 10px;
+}
+
+.forma-pagamento select {
+  width: 100%;
+  padding: 5px;
+}
+
+/* ATALHOS */
+.atalhos {
+  background: #0d2f47;
+  padding: 10px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 12px;
+}
