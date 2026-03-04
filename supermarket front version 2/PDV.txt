@@ -1,0 +1,330 @@
+codigo bom PDV : 
+
+import React, { useState, useEffect } from "react";
+import arrozImg from "../assets/arroz.png";
+import feijaoImg from "../assets/feijao.png";
+import macarraoImg from "../assets/macarrao.png";
+import refrigeranteImg from "../assets/refrigerante.png";
+import "../css/App.css";
+
+export default function PDV() {
+  const [codigo, setCodigo] = useState("");
+  const [carrinho, setCarrinho] = useState([]);
+  const [totalRecebido, setTotalRecebido] = useState("");
+  const [mostrarPagamento, setMostrarPagamento] = useState(false);
+
+  const imagemCarrinho =
+    "https://cdn-icons-png.flaticon.com/512/1170/1170678.png";
+
+  const [imagemProduto, setImagemProduto] = useState(imagemCarrinho);
+
+  // PRODUTOS COM IMAGEM
+  const produtos = {
+    "789001": {
+      nome: "Arroz",
+      preco: 20,
+      imagem: arrozImg
+    },
+    "789002": {
+      nome: "Macarrão",
+      preco: 5,
+     imagem: macarraoImg
+    },
+    "789003": {
+      nome: "Feijão",
+      preco: 8.5,
+      imagem: feijaoImg
+    },
+    "789004": {
+      nome: "Leite",
+      preco: 6,
+      imagem: refrigeranteImg
+    }
+  };
+
+  function adicionarItem() {
+    if (!codigo || !produtos[codigo]) return;
+
+    const produto = produtos[codigo];
+
+    setImagemProduto(produto.imagem); // troca imagem
+
+    const itemExistente = carrinho.find(
+      (item) => item.codigo === codigo
+    );
+
+    if (itemExistente) {
+      setCarrinho(
+        carrinho.map((item) =>
+          item.codigo === codigo
+            ? {
+                ...item,
+                quantidade: item.quantidade + 1
+              }
+            : item
+        )
+      );
+    } else {
+      setCarrinho([
+        ...carrinho,
+        {
+          codigo,
+          nome: produto.nome,
+          quantidade: 1,
+          preco: produto.preco
+        }
+      ]);
+    }
+
+    setCodigo("");
+  }
+
+  function cancelarUltimoItem() {
+    setCarrinho(carrinho.slice(0, -1));
+  }
+
+  function cancelarVenda() {
+    setCarrinho([]);
+    setTotalRecebido("");
+    setImagemProduto(imagemCarrinho);
+  }
+
+  function finalizarVenda() {
+    if (carrinho.length === 0) return;
+    setMostrarPagamento(true);
+  }
+
+  // ATALHOS
+  useEffect(() => {
+    function handleKeyDown(e) {
+      switch (e.key) {
+        case "F2":
+          e.preventDefault();
+          cancelarUltimoItem();
+          break;
+
+        case "F3":
+          e.preventDefault();
+          finalizarVenda();
+          break;
+
+        case "F4":
+          e.preventDefault();
+          cancelarVenda();
+          break;
+
+        case "Escape":
+          e.preventDefault();
+          alert("Saindo...");
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () =>
+      window.removeEventListener("keydown", handleKeyDown);
+  }, [carrinho]);
+
+  const subtotal = carrinho.reduce(
+    (acc, item) => acc + item.quantidade * item.preco,
+    0
+  );
+
+  const troco =
+    parseFloat(totalRecebido || 0) > subtotal
+      ? parseFloat(totalRecebido) - subtotal
+      : 0;
+
+  return (
+    <div className="pdv">
+      <header className="topo">
+        <div className="logo">SUPERMERCADO PDV</div>
+        <div className="caixa-info">
+          Caixa: 01 | Operador: João | Status: CAIXA ABERTO
+        </div>
+      </header>
+
+      <div className="conteudo">
+        <div className="painel-esquerdo">
+          <div className="imagem-produto">
+            <img src={imagemProduto} alt="Produto" />
+          </div>
+
+          <div className="campo">
+            <input
+              type="text"
+              placeholder="Código do produto"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && adicionarItem()
+              }
+              className="input-codigo"
+            />
+
+            <label>Valor Unitário</label>
+            <input type="text" />
+
+            <label>Total do Item</label>
+            <input type="text" />
+
+            <label>Quantidade</label>
+            <input type="number" />
+          </div>
+        </div>
+
+        <div className="lista-produtos">
+          <div className="titulo-lista">
+            LISTA DE PRODUTOS
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Qtd</th>
+                <th>Vl. Unit</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {carrinho.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{item.codigo}</td>
+                  <td>{item.nome}</td>
+                  <td>{item.quantidade}</td>
+                  <td>
+                    R$ {item.preco.toFixed(2)}
+                  </td>
+                  <td>
+                    R${" "}
+                    {(item.quantidade * item.preco).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="resumo">
+        <div className="bloco subtotal">
+          SUBTOTAL
+          <span>R$ {subtotal.toFixed(2)}</span>
+        </div>
+
+        <div className="bloco">
+          TOTAL RECEBIDO
+          <input
+            type="number"
+            value={totalRecebido}
+            onChange={(e) =>
+              setTotalRecebido(e.target.value)
+            }
+          />
+        </div>
+
+        <div className="bloco">
+          TROCO
+          <span>R$ {troco.toFixed(2)}</span>
+        </div>
+
+        <div className="forma-pagamento">
+          <label>Forma de Pagamento</label>
+          <select>
+            <option>Dinheiro</option>
+            <option>Cartão Crédito</option>
+            <option>Cartão Débito</option>
+            <option>Pix</option>
+          </select>
+        </div>
+      </div>
+
+      <footer className="atalhos">
+        F2 - Cancelar Item | F3 - Finalizar Venda | F4 -
+        Cancelar Venda | ESC - Sair
+      </footer>
+
+      {/* MODAL PAGAMENTO */}
+   <div className="modal">
+    <div className="modal-conteudo cupom">
+      
+      <div className="cupom-topo">
+        <h3>SUPERMERCADO MODELO LTDA</h3>
+        <p>CNPJ: 12.345.678/0001-99</p>
+        <p>IE: 123.456.789.000</p>
+        <p>Rua Exemplo, 123 - Centro</p>
+        <p>São Paulo - SP</p>
+      </div>
+
+      <hr />
+
+      <p>CUPOM FISCAL</p>
+      <p>Data: {new Date().toLocaleDateString()}</p>
+      <p>Hora: {new Date().toLocaleTimeString()}</p>
+      <p>Operador: João</p>
+      <p>Caixa: 01</p>
+
+      <hr />
+
+      {carrinho.map((item, index) => (
+        <div key={index} className="cupom-item">
+          <span>{item.nome}</span>
+          <span>
+            {item.quantidade} x {item.preco.toFixed(2)}
+          </span>
+          <span>
+            R$ {(item.quantidade * item.preco).toFixed(2)}
+          </span>
+        </div>
+      ))}
+
+      <hr />
+
+      <div className="cupom-total">
+        <p>SUBTOTAL: R$ {subtotal.toFixed(2)}</p>
+        <p>RECEBIDO: R$ {parseFloat(totalRecebido || 0).toFixed(2)}</p>
+        <p>TROCO: R$ {troco.toFixed(2)}</p>
+      </div>
+
+      <hr />
+
+      <p>CPF/CNPJ do Consumidor:</p>
+      <p>___________________________</p>
+
+      <hr />
+
+      <p style={{ textAlign: "center" }}>
+        Obrigado pela preferência!
+      </p>
+
+      <div className="botoes-cupom">
+        <button onClick={() => window.print()}>
+          Imprimir
+        </button>
+
+        <button
+          onClick={() => {
+            setMostrarPagamento(false);
+            cancelarVenda();
+          }}
+        >
+          Nova Venda
+        </button>
+
+        <button onClick={() => setMostrarPagamento(false)}>
+          Fechar
+        </button>
+      </div>
+    </div>
+    </div>
+          </div>
+      )}
+    
